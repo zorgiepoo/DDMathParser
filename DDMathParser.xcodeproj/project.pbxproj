@@ -85,6 +85,7 @@
 		72030BA01B045CD900A5621C /* _DDRewriteRule.h in Headers */ = {isa = PBXBuildFile; fileRef = 55ABBAA9142ECB1300BDF29A /* _DDRewriteRule.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		72030BA11B045CEC00A5621C /* DDMathParserMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5514EE291347CE9B0010B9D8 /* DDMathParserMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		72030BA81B04620F00A5621C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72030BA71B04620F00A5621C /* Foundation.framework */; };
+		7235B7B624D7DA740029580A /* DDMathParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 55BA673E1298ECA2002279A5 /* DDMathParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -416,6 +417,7 @@
 				72030B881B045CD800A5621C /* DDParserTypes.h in Headers */,
 				72030B891B045CD800A5621C /* DDMathStringTokenizer.h in Headers */,
 				72030B8A1B045CD800A5621C /* DDMathStringToken.h in Headers */,
+				7235B7B624D7DA740029580A /* DDMathParser.h in Headers */,
 				72030B8B1B045CD800A5621C /* DDParser.h in Headers */,
 				72030B8C1B045CD900A5621C /* DDMathOperator.h in Headers */,
 				72030B8D1B045CD900A5621C /* DDMathOperator_Internal.h in Headers */,
