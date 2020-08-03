@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class DDExpression;
+@class DDMathEvaluator;
 
 @interface _DDRewriteRule : NSObject
 

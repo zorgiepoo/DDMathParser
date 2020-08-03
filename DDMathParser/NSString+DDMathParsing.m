@@ -12,20 +12,20 @@
 
 @implementation NSString (DDMathParsing)
 
-- (NSNumber *)numberByEvaluatingString {
-	return [self numberByEvaluatingStringWithSubstitutions:nil];
+- (NSNumber *)ddNumberByEvaluatingString {
+	return [self ddNumberByEvaluatingStringWithSubstitutions:nil];
 }
 
-- (NSNumber *)numberByEvaluatingStringWithSubstitutions:(NSDictionary *)substitutions {
+- (NSNumber *)ddNumberByEvaluatingStringWithSubstitutions:(NSDictionary *)substitutions {
 	NSError *error = nil;
-	NSNumber *returnValue = [self numberByEvaluatingStringWithSubstitutions:substitutions error:&error];
+	NSNumber *returnValue = [self ddNumberByEvaluatingStringWithSubstitutions:substitutions error:&error];
 	if (returnValue == nil) {
 		NSLog(@"error: %@", error);
 	}
 	return returnValue;
 }
 
-- (NSNumber *)numberByEvaluatingStringWithSubstitutions:(NSDictionary *)substitutions error:(NSError **)error {
+- (NSNumber *)ddNumberByEvaluatingStringWithSubstitutions:(NSDictionary *)substitutions error:(NSError * __autoreleasing *)error {
     return [[DDMathEvaluator defaultMathEvaluator] evaluateString:self withSubstitutions:substitutions error:error];
 }
 

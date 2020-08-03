@@ -15,6 +15,7 @@
 #import "_DDFunctionEvaluator.h"
 #import "_DDPrecisionFunctionEvaluator.h"
 #import "DDExpressionRewriter.h"
+#import "DDMathOperator.h"
 #import <objc/runtime.h>
 
 
@@ -66,8 +67,6 @@
 #pragma mark - Functions
 
 - (BOOL)registerFunction:(DDMathFunction)function forName:(NSString *)functionName {
-    functionName = [functionName lowercaseString];
-    
     // we cannot re-register a standard function
     if ([_DDFunctionEvaluator isStandardFunction:functionName]) {
         return NO;
@@ -84,25 +83,9 @@
     return YES;
 }
 
-- (void)unregisterFunctionWithName:(NSString *)functionName {
-    functionName = [functionName lowercaseString];
-    [_functionMap removeObjectForKey:functionName];
-}
-
-- (NSArray *)registeredFunctions {
-    NSMutableArray *array = [NSMutableArray array];
-    
-    [array addObjectsFromArray:[[_DDFunctionEvaluator standardFunctions] array]];
-    [array addObjectsFromArray:[_functionMap allKeys]];
-    
-    [array sortUsingSelector:@selector(compare:)];
-    
-    return array;
-}
-
 #pragma mark - Lazy Resolution
 
-- (DDExpression *)resolveFunction:(_DDFunctionExpression *)functionExpression variables:(NSDictionary *)variables error:(NSError **)error {
+- (DDExpression *)resolveFunction:(_DDFunctionExpression *)functionExpression variables:(NSDictionary *)variables error:(NSError * __autoreleasing *)error {
     NSString *functionName = [functionExpression function];
     
     DDExpression *e = nil;
@@ -159,7 +142,7 @@
         return NO;
     }
     
-    DDMathFunction function = ^DDExpression* (NSArray *args, NSDictionary *vars, DDMathEvaluator *eval, NSError **error) {
+    DDMathFunction function = ^DDExpression* (NSArray *args, NSDictionary *vars, DDMathEvaluator *eval, NSError * __autoreleasing *error) {
         DDExpression *e = [DDExpression functionExpressionWithFunction:functionName arguments:args error:error];
         NSNumber *n = [eval evaluateExpression:e withSubstitutions:vars error:error];
         return [DDExpression numberExpressionWithNumber:n];
@@ -187,7 +170,7 @@
 	return returnValue;
 }
 
-- (NSNumber *)evaluateString:(NSString *)expressionString withSubstitutions:(NSDictionary *)substitutions error:(NSError **)error {
+- (NSNumber *)evaluateString:(NSString *)expressionString withSubstitutions:(NSDictionary *)substitutions error:(NSError * __autoreleasing *)error {
     DDMathStringTokenizer *tokenizer = [[DDMathStringTokenizer alloc] initWithString:expressionString operatorSet:self.operatorSet error:error];
     if (!tokenizer) { return nil; }
     
@@ -200,7 +183,7 @@
     return [self evaluateExpression:expression withSubstitutions:substitutions error:error];
 }
 
-- (NSNumber *)evaluateExpression:(DDExpression *)expression withSubstitutions:(NSDictionary *)substitutions error:(NSError **)error {
+- (NSNumber *)evaluateExpression:(DDExpression *)expression withSubstitutions:(NSDictionary *)substitutions error:(NSError * __autoreleasing *)error {
     if ([expression expressionType] == DDExpressionTypeNumber) {
         return [expression number];
     } else if ([expression expressionType] == DDExpressionTypeVariable) {
@@ -211,7 +194,7 @@
     return nil;
 }
 
-- (NSNumber *)_evaluateVariableExpression:(DDExpression *)e withSubstitutions:(NSDictionary *)substitutions error:(NSError **)error {
+- (NSNumber *)_evaluateVariableExpression:(DDExpression *)e withSubstitutions:(NSDictionary *)substitutions error:(NSError * __autoreleasing *)error {
 	id variableValue = [substitutions objectForKey:[e variable]];
     
     if (variableValue == nil) {
@@ -231,7 +214,7 @@
     
 }
 
-- (NSNumber *)_evaluateFunctionExpression:(_DDFunctionExpression *)e withSubstitutions:(NSDictionary *)substitutions error:(NSError **)error {
+- (NSNumber *)_evaluateFunctionExpression:(_DDFunctionExpression *)e withSubstitutions:(NSDictionary *)substitutions error:(NSError * __autoreleasing *)error {
     
     id result = [_functionEvaluator evaluateFunction:e variables:substitutions error:error];
     
@@ -244,7 +227,7 @@
     return numberValue;
 }
 
-- (NSNumber *)_evaluateValue:(id)value withSubstitutions:(NSDictionary *)substitutions error:(NSError **)error {
+- (NSNumber *)_evaluateValue:(id)value withSubstitutions:(NSDictionary *)substitutions error:(NSError * __autoreleasing *)error {
     // given an object of unknown type, this evaluates it as best as it can
     if ([value isKindOfClass:[DDExpression class]]) {
         return [self evaluateExpression:value withSubstitutions:substitutions error:error];
@@ -282,6 +265,9 @@
 
 #pragma mark - Deprecated Methods
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+
 + (id)sharedMathEvaluator {
     return [self defaultMathEvaluator];
 }
@@ -293,5 +279,22 @@
 - (void)addRewriteRule:(NSString *)rule forExpressionsMatchingTemplate:(NSString *)templateString condition:(NSString *)condition {
     [[DDExpressionRewriter defaultRewriter] addRewriteRule:rule forExpressionsMatchingTemplate:templateString condition:condition];
 }
+
+- (void)unregisterFunctionWithName:(NSString *)functionName {
+    [_functionMap removeObjectForKey:functionName];
+}
+
+- (NSArray *)registeredFunctions {
+    NSMutableArray *array = [NSMutableArray array];
+    
+    [array addObjectsFromArray:[[_DDFunctionEvaluator standardFunctions] array]];
+    [array addObjectsFromArray:[_functionMap allKeys]];
+    
+    [array sortUsingSelector:@selector(compare:)];
+    
+    return array;
+}
+
+#pragma clang diagnostic pop
 
 @end
